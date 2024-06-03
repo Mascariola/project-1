@@ -2,10 +2,11 @@
 title = My Application
 package.name = myapp
 package.domain = org.test
+source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 version = 0.1
 requirements = python3,kivy
-orientation = all
+orientation = sensor
 fullscreen = 1
 source.include_patterns = assets/*,images/*.png
 
