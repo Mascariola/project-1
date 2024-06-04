@@ -1,46 +1,26 @@
-name: CI
-
+name: Build
 on:
   push:
-    branches: [main]
 
 jobs:
-  build:
-    runs-on: ubuntu-20.04
+# Build job. Builds app for Android with Buildozer
+build-android:
+  name: Build for Android
+  runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
+    - name: Build with Buildozer
+      uses: ArtemSBulgakov/buildozer-action@v1
+      id: buildozer
+      with:
+        workdir: <specify the directory of the app no don't mention this the app files are in root directory>
+        buildozer_version: stable
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-pip python3-setuptools python3-wheel
-          pip install python-for-android
-
-      - name: Get Date
-        id: get-date
-        run: |
-          echo "::set-output name=date::$(date -u "+%Y%m%d")"
-        shell: bash
-
-      - name: Cache python-for-android directory
-        uses: actions/cache@v2
-        with:
-          path: ~/.local/share/python-for-android
-          key: p4a-${{ hashFiles('**/*') }}
-
-      - name: Build with python-for-android
-        run: |
-          p4a apk --private . --package=com.example.myapp --name "My App" --version=0.1 --bootstrap=sdl2 --requirements=python3,kivy
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: package
-          path: dist/*.apk
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: package
+        path: ${{ steps.buildozer.outputs.filename }}
